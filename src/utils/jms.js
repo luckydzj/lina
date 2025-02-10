@@ -1,10 +1,13 @@
-import store from '@/store'
 import { constantRoutes } from '@/router'
+import store from '@/store'
 import { openWindow } from './common'
 
-export function openTaskPage(taskId, taskType) {
+export function openTaskPage(taskId, taskType, taskUrl) {
   taskType = taskType || 'celery'
-  openWindow(`/#/ops/${taskType}/task/${taskId}/log/?type=${taskType}`)
+  if (!taskUrl) {
+    taskUrl = `/core/ops/${taskType}/task/${taskId}/log/?type=${taskType}`
+  }
+  openWindow(taskUrl)
 }
 
 export function checkPermission(permsRequired, permsAll) {
@@ -106,7 +109,7 @@ export function isSameView(to, from) {
 
 export function getPropView() {
   const hasPermedViews = getPermedViews()
-  const preView = localStorage.getItem('PreView')
+  const preView = localStorage.getItem('preView')
   const hasPerm = hasPermedViews.indexOf(preView) > -1
   if (hasPerm) {
     return preView
@@ -140,4 +143,15 @@ export function getConstRouteName() {
   }
   addRoutes(names, constRoutes)
   return names
+}
+
+export function toM2MJsonParams(attrFilter) {
+  const encoder = new TextEncoder()
+  const data = encoder.encode(JSON.stringify(attrFilter))
+  return ['attr_rules', encodeURIComponent(btoa(String.fromCharCode(...data)))]
+}
+
+export function IsSupportPauseSessionType(terminalType) {
+  const supportedType = ['koko', 'lion', 'chen', 'kael']
+  return supportedType.includes(terminalType)
 }
